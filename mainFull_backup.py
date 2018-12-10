@@ -10,25 +10,31 @@ import random
 #import python3 third party
 import pyaudio
 import pygame
+import array
 
 def rmsFunction():
     # Creates a generator that can iterate rms values
-    CHUNK = 1024
+    CHUNK = 64 
     WIDTH = 2
-    CHANNELS = 2
-    RATE = 44100
+    CHANNELS = 1
+    FORMAT = pyaudio.paInt16
+    RATE = 44100 
     colourMax = 255
     p = pyaudio.PyAudio()
 
-    stream = p.open(format=p.get_format_from_width(WIDTH),
+#format=p.get_format_from_width(WIDTH)
+    stream = p.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,
                     input=True,
-                    output=True,
+                    output=False,
                     frames_per_buffer=CHUNK)
-    time.sleep(1)
+    time.sleep(2)
+ 
+    
     while True:
-        data = stream.read(CHUNK, exception_on_overflow = False)
+        time.sleep(0.5) 
+        data = stream.read(CHUNK)
         #stream.write(data, CHUNK)
         rms = audioop.rms(data, 2)
         # Scale the rms value to be within 0-255
@@ -67,14 +73,13 @@ def main():
 
         # Draw polygons to the screen
         if rmsValue > 100:
-            pygame.draw.polygon(screen, ((rmsInt+colourRand)*0.3, rmsInt, rmsInt), ((posOneW,posOneH), (posTwoW,posTwoH), (posThreeW,posThreeH)))
-            #pxarray = pygame.PixelArray(screen)
-            #pygame.pixelcopy.surface_to_array(pxarray, screen, kind='P', opaque=255, clear=0)
-        #pygame.draw.polygon(screen, (rmsInt, (rmsInt+sOne)*0.5, rmsInt), ((posOne,posTwo), (screenH,screenW), (posThree,posFour)))
+            pygame.draw.polygon(screen,
+                                ((rmsInt+colourRand)*0.3, rmsInt, rmsInt), 
+                                ((posOneW,posOneH), (posTwoW,posTwoH), 
+                                (posThreeW,posThreeH)))
         pygame.display.update()
         time.sleep(0.01)
         pygame.Surface.fill(screen, (0,0,0))
-
 
         # check for quit events
         for event in pygame.event.get():
